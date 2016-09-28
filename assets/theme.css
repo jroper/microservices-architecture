@@ -1,0 +1,15 @@
+.image-fragments {
+    position: relative;
+}
+
+.image-fragemnts > div {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.image-fragments img {
+    border: 0;
+    box-shadow: none;
+    height: 80%;
+}
