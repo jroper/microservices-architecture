@@ -31,6 +31,12 @@ Lightbend
 
 ## Monolith architecture
 
-<div style="position: relative; width: 80%; height: 80%; border: thick solid black; border-radius: 20px;">
-  <div style="position: relative; width: 20%; height: 20%; border: thick solid black; border-radius: 20px;">A</div>
-</div>
+<span style="position: absolute">
+!(assets/img0.png)
+</span>
+<span class="fragment" style="position: absolute">
+!(assets/img1.png)
+</span>
+<span class="fragment" style="position: absolute">
+!(assets/img2.png)
+</span>
