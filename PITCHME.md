@@ -32,11 +32,11 @@ Lightbend
 ## Monolith architecture
 
 <span style="position: absolute">
-![](assets/img0.png)
+![0](assets/img0.png)
 </span>
 <span class="fragment" style="position: absolute">
-![](assets/img1.png)
+![1](assets/img1.png)
 </span>
 <span class="fragment" style="position: absolute">
-![](assets/img2.png)
+![2](assets/img2.png)
 </span>
