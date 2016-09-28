@@ -76,7 +76,7 @@ Lightbend
 
 <div class="image-fragments">
     <div>
-![5](assets/img6.png)
+![5](assets/img5.png)
     </div>
     <div class="fragment">
 ![6](assets/img6.png)

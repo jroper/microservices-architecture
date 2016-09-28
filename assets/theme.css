@@ -2,7 +2,7 @@
     position: relative;
 }
 
-.image-fragments div {
+.image-fragments > div {
     position: absolute;
     left: 0;
     top: 0;
