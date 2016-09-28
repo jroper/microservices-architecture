@@ -31,12 +31,26 @@ Lightbend
 
 ## Monolith architecture
 
-<span style="position: absolute">
-![0](assets/img0.png)
-</span>
-<span class="fragment" style="position: absolute">
-![1](assets/img1.png)
-</span>
-<span class="fragment" style="position: absolute">
-![2](assets/img2.png)
+<span style="relative">
+    <span style="position: absolute; left: 0; top: 0;">
+        ![0](assets/img0.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![1](assets/img1.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![2](assets/img2.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![3](assets/img3.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![4](assets/img4.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![5](assets/img5.png)
+    </span>
+    <span class="fragment" style="position: absolute; left: 0; top: 0;">
+        ![6](assets/img6.png)
+    </span>
 </span>
