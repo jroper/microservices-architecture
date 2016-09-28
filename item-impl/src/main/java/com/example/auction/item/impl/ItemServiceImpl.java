@@ -4,6 +4,8 @@ import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
 import akka.stream.javadsl.Flow;
+import akka.stream.javadsl.Source;
+import com.example.auction.bidding.api.AuctionToStart;
 import com.example.auction.bidding.api.Bid;
 import com.example.auction.bidding.api.BidEvent;
 import com.example.auction.bidding.api.BiddingService;
@@ -34,32 +36,17 @@ import static com.example.auction.security.ServerSecurity.*;
 public class ItemServiceImpl implements ItemService {
 
     private final PersistentEntityRegistry registry;
+    private final BiddingService biddingService;
 
     @Inject
     public ItemServiceImpl(PersistentEntityRegistry registry, BiddingService biddingService) {
         this.registry = registry;
+        this.biddingService = biddingService;
 
         registry.register(PItemEntity.class);
 
-        biddingService.bidEvents().subscribe().atLeastOnce(Flow.<BidEvent>create().mapAsync(1, event -> {
-            if (event instanceof BidEvent.BidPlaced) {
-                BidEvent.BidPlaced bidPlaced = (BidEvent.BidPlaced) event;
-                return entityRef(bidPlaced.getItemId())
-                        .ask(new PItemCommand.UpdatePrice(bidPlaced.getBid().getPrice()));
-            } else if (event instanceof BidEvent.BiddingFinished) {
-                BidEvent.BiddingFinished biddingFinished = (BidEvent.BiddingFinished) event;
-                PItemCommand.FinishAuction finishAuction = new PItemCommand.FinishAuction(
-                        biddingFinished.getWinningBid().map(Bid::getBidder),
-                        biddingFinished.getWinningBid().map(Bid::getPrice).orElse(0));
-                return entityRef(biddingFinished.getItemId()).ask(finishAuction);
-            } else {
-                // Ignore.
-                return CompletableFuture.completedFuture(Done.getInstance());
-            }
-        }));
     }
 
-    
     @Override
     public ServiceCall<Item, Item> createItem() {
         return authenticated(userId -> item -> {
@@ -84,7 +71,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ServiceCall<NotUsed, Done> startAuction(UUID id) {
         return authenticated(userId -> req ->
-            entityRef(id).ask(new PItemCommand.StartAuction(userId))
+            entityRef(id).ask(new PItemCommand.StartAuction(userId)).thenCompose(done ->
+                    entityRef(id).ask(PItemCommand.GetItem.INSTANCE)
+            ).thenCompose(maybeItem -> {
+                PItem item = maybeItem.get();
+                return biddingService.startAuction(id).invoke(
+                        new AuctionToStart(item.getId(), item.getCreator(), item.getReservePrice(),
+                                item.getIncrement(), item.getAuctionStart().get(), item.getAuctionEnd().get())
+                );
+            })
         );
     }
 
@@ -131,21 +126,19 @@ public class ItemServiceImpl implements ItemService {
         };
     }
 
+    /**
+     * Return the stream of item events.
+     */
     @Override
     public Topic<ItemEvent> itemEvents() {
         return TopicProducer.taggedStreamWithOffset(PItemEvent.TAGS, (tag, offset) -> {
-            return registry.eventStream(tag, offset)
-                    .filter(this::filterEvent)
-                    .mapAsync(1, eventAndOffset ->
-                            convertEvent(eventAndOffset.first()).thenApply(event ->
-                                    Pair.create(event, eventAndOffset.second())));
+            return Source.maybe();
         });
     }
 
-    private boolean filterEvent(Pair<PItemEvent, Offset> event) {
-        return event.first() instanceof PItemEvent.AuctionStarted;
-    }
-
+    /**
+     * Convert a persisted item event to an item event to publish.
+     */
     private CompletionStage<ItemEvent> convertEvent(PItemEvent event) {
         if (event instanceof PItemEvent.AuctionStarted) {
             return entityRef(((PItemEvent.AuctionStarted) event).getItemId())

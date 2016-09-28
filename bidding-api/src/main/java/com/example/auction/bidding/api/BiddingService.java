@@ -7,6 +7,7 @@ import static com.lightbend.lagom.javadsl.api.Service.named;
 import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 import static com.lightbend.lagom.javadsl.api.Service.topic;
 
+import akka.Done;
 import akka.NotUsed;
 import com.example.auction.security.SecurityHeaderFilter;
 import com.lightbend.lagom.javadsl.api.Descriptor;
@@ -44,6 +45,13 @@ public interface BiddingService extends Service {
   ServiceCall<NotUsed, PSequence<Bid>> getBids(UUID itemId);
 
   /**
+   * Start an auction.
+   *
+   * @param itemId The id of the auction to start.
+   */
+  ServiceCall<AuctionToStart, Done> startAuction(UUID itemId);
+
+  /**
    * The bid events topic.
    */
   Topic<BidEvent> bidEvents();
@@ -52,7 +60,8 @@ public interface BiddingService extends Service {
   default Descriptor descriptor() {
     return named("bidding").withCalls(
             pathCall("/api/item/:id/bids", this::placeBid),
-            pathCall("/api/item/:id/bids", this::getBids)
+            pathCall("/api/item/:id/bids", this::getBids),
+            pathCall("/api/item/:id/start", this::startAuction)
     ).publishing(
             topic("bidding-BidEvent", this::bidEvents)
     ).withPathParamSerializer(UUID.class, PathParamSerializers.required("UUID", UUID::fromString, UUID::toString))

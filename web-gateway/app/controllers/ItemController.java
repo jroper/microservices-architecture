@@ -7,6 +7,9 @@ import com.example.auction.item.api.ItemStatus;
 import com.example.auction.user.api.User;
 import com.example.auction.user.api.UserService;
 import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -14,6 +17,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -22,8 +26,10 @@ import java.util.concurrent.CompletionStage;
 
 import static com.example.auction.security.ClientSecurity.*;
 
+@Singleton
 public class ItemController extends AbstractController {
 
+    private static final Logger log = LoggerFactory.getLogger(ItemController.class);
     private final FormFactory formFactory;
     private final ItemService itemService;
     private final BiddingService bidService;
@@ -77,13 +83,22 @@ public class ItemController extends AbstractController {
         return doGetItem(ctx(), itemId, formFactory.form(BidForm.class));
     }
 
+    /**
+     * Get an item and the bidding history for the item.
+     */
     private CompletionStage<Result> doGetItem(Http.Context ctx, String itemId, Form<BidForm> bidForm) {
         return requireUser(ctx, user -> loadNav(user).thenCompose(nav -> {
             UUID itemUuid = UUID.fromString(itemId);
+
+            // Get the item from the item service
             CompletionStage<Item> itemFuture = itemService.getItem(itemUuid)
                     .handleRequestHeader(authenticate(user)).invoke();
+
+            // Get the bidding history from the bidding service in parallel
             CompletionStage<PSequence<Bid>> bidHistoryFuture = bidService.getBids(itemUuid)
                     .handleRequestHeader(authenticate(user)).invoke();
+
+            // Combine the two futures together.
             return itemFuture.thenCombineAsync(bidHistoryFuture, (item, bidHistory) -> {
 
                 if (item.getStatus() == ItemStatus.CREATED && !item.getCreator().equals(user)) {

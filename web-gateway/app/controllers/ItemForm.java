@@ -23,7 +23,7 @@ public class ItemForm {
     @Constraints.Required
     private BigDecimal reserve = BigDecimal.ZERO;
     @Constraints.Required
-    private int duration = 10;
+    private int duration = 30;
     @Constraints.Required
     private String durationUnits;
 

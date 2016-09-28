@@ -39,28 +39,15 @@ import static com.example.auction.security.ServerSecurity.authenticated;
 public class BiddingServiceImpl implements BiddingService {
 
     private final PersistentEntityRegistry registry;
+    private final ItemService itemService;
 
     @Inject
     public BiddingServiceImpl(PersistentEntityRegistry registry, ItemService itemService) {
         this.registry = registry;
+        this.itemService = itemService;
 
         registry.register(AuctionEntity.class);
 
-        // Subscribe to the events from the event service.
-        itemService.itemEvents().subscribe().atLeastOnce(Flow.<ItemEvent>create().mapAsync(1, itemEvent -> {
-            if (itemEvent instanceof ItemEvent.AuctionStarted) {
-                ItemEvent.AuctionStarted auctionStarted = (ItemEvent.AuctionStarted) itemEvent;
-                Auction auction = new Auction(auctionStarted.getItemId(), auctionStarted.getCreator(),
-                        auctionStarted.getReservePrice(), auctionStarted.getIncrement(), auctionStarted.getStartDate(),
-                        auctionStarted.getEndDate());
-
-                return entityRef(auctionStarted.getItemId()).ask(new AuctionCommand.StartAuction(auction));
-            } else if (itemEvent instanceof ItemEvent.AuctionCancelled) {
-                return entityRef(itemEvent.getItemId()).ask(AuctionCommand.CancelAuction.INSTANCE);
-            } else {
-                return CompletableFuture.completedFuture(Done.getInstance());
-            }
-        }));
     }
 
     @Override
@@ -87,28 +74,30 @@ public class BiddingServiceImpl implements BiddingService {
     }
 
     @Override
+    public ServiceCall<AuctionToStart, Done> startAuction(UUID itemId) {
+        return auction -> {
+            return entityRef(itemId).ask(new AuctionCommand.StartAuction(new Auction(
+                    auction.getItemId(), auction.getCreator(), auction.getReservePrice(), auction.getIncrement(),
+                    auction.getStartTime(), auction.getEndTime()
+            )));
+        };
+    }
+
+    @Override
     public Topic<BidEvent> bidEvents() {
         return TopicProducer.taggedStreamWithOffset(AuctionEvent.TAGS, this::streamForTag);
     }
 
+    /**
+     * Create the stream for the given tag and offset.
+     */
     private Source<Pair<BidEvent, Offset>, ?> streamForTag(AggregateEventTag<AuctionEvent> tag, Offset offset) {
-        return registry.eventStream(tag, offset).filter(eventOffset ->
-                eventOffset.first() instanceof AuctionEvent.BidPlaced ||
-                        eventOffset.first() instanceof AuctionEvent.BiddingFinished
-        ).mapAsync(1, eventOffset -> {
-            if (eventOffset.first() instanceof AuctionEvent.BidPlaced) {
-                AuctionEvent.BidPlaced bid = (AuctionEvent.BidPlaced) eventOffset.first();
-                return CompletableFuture.completedFuture(Pair.create(
-                        new BidEvent.BidPlaced(bid.getItemId(), convertBid(bid.getBid())),
-                        eventOffset.second()
-                ));
-            } else {
-                UUID itemId = ((AuctionEvent.BiddingFinished) eventOffset.first()).getItemId();
-                return getBiddingFinish(itemId, eventOffset.second());
-            }
-        });
+        return Source.maybe();
     }
 
+    /**
+     * Get the bidding finished event for the given item id and offest.
+     */
     private CompletionStage<Pair<BidEvent, Offset>> getBiddingFinish(UUID itemId, Offset offset) {
         return entityRef(itemId).ask(GetAuction.INSTANCE).thenApply(auction -> {
             Optional<Bid> winningBid = auction.lastBid()
