@@ -155,29 +155,6 @@ Lightbend
     <div class="fragment">
 ![19](assets/img19.png)
     </div>
-</div>
-
-#VSLIDE
-
-## Inconsistency from failure
-
-- Synchronous "at same time" communication of updates is dangerous  <!-- .element: class="fragment" -->
-    - Transactions can't span service boundaries                    <!-- .element: class="fragment" -->
-
-#VSLIDE
-
-## Pattern 3: Asynchronous messaging
-
-- Does not require both systems to be responsive    <!-- .element: class="fragment" -->
-- Perfect if you already persist events             <!-- .element: class="fragment" -->
-- Use persistent events a source of messages        <!-- .element: class="fragment" -->
-
-#VSLIDE
-
-<div class="image-fragments">
-    <div>
-![17](assets/img17.png)
-    </div>
     <div class="fragment">
 ![20](assets/img20.png)
     </div>
@@ -192,3 +169,99 @@ Lightbend
     </div>
 </div>
 
+#VSLIDE
+
+## Inconsistency from failure
+
+- Synchronous "at same time" communication of updates is dangerous  <!-- .element: class="fragment" -->
+    - Transactions can't span service boundaries                    <!-- .element: class="fragment" -->
+
+#HSLIDE
+
+## Pattern 3: Asynchronous messaging
+
+- Does not require both systems to be responsive    <!-- .element: class="fragment" -->
+- Perfect if you already persist events             <!-- .element: class="fragment" -->
+- Use persistent events a source of messages        <!-- .element: class="fragment" -->
+
+#VSLIDE
+
+<div class="image-fragments">
+    <div>
+![17](assets/img17.png)
+    </div>
+    <div class="fragment">
+![24](assets/img24.png)
+    </div>
+    <div class="fragment">
+![25](assets/img25.png)
+    </div>
+    <div class="fragment">
+![26](assets/img26.png)
+    </div>
+    <div class="fragment">
+![27](assets/img27.png)
+    </div>
+</div>
+
+#HSLIDE
+
+## Unnacceptable degradation
+
+- Earlier we degraded the item page with empty bid history  <!-- .element: class="fragment" -->
+- Price was also $0                                         <!-- .element: class="fragment" -->
+- Users may tolerate no history, but not wrong price        <!-- .element: class="fragment" -->
+
+#VSLIDE
+
+<div class="image-fragments">
+    <div>
+![28](assets/img28.png)
+    </div>
+    <div class="fragment">
+![29](assets/img29.png)
+    </div>
+</div>
+
+#HSLIDE
+
+## Pattern 4: Denormalize
+
+- Push important information to other services      <!-- .element: class="fragment" -->
+    - Important for system funcitons                <!-- .element: class="fragment" -->
+    - Important for business functions              <!-- .element: class="fragment" -->
+- Store duplicated information in those services    <!-- .element: class="fragment" -->
+    - AKA denormalization                           <!-- .element: class="fragment" -->
+
+#VSLIDE
+
+<div class="image-fragments">
+    <div>
+![30](assets/img30.png)
+    </div>
+    <div class="fragment">
+![31](assets/img31.png)
+    </div>
+    <div class="fragment">
+![32](assets/img32.png)
+    </div>
+</div>
+
+#HSLIDE
+
+## Summary
+
+- Monolith to microservices requires rearchitecting data flows  <!-- .element: class="fragment" -->
+- Failure and inconsistency must be managed                     <!-- .element: class="fragment" -->
+- Use:                                                          <!-- .element: class="fragment" -->
+    - Circuit breakers                                          <!-- .element: class="fragment" -->
+    - Failure degradation                                       <!-- .element: class="fragment" -->
+    - Asynchronous messaging                                    <!-- .element: class="fragment" -->
+    - Denormalization                                           <!-- .element: class="fragment" -->
+
+#VSLIDE
+
+## Next steps
+
+http://lagomframework.com
+http://github.com/jroper/mircoservices-architecture
