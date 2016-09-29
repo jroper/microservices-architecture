@@ -62,7 +62,9 @@ Lightbend
 
 ## Synchronous communication
 
-**synchronous** *adj.* - existing or occurring at the same time. <!-- .element: class="fragment" -->
+<span class="fragment">
+**synchronous** *adj.* - existing or occurring at the same time.
+</span>
 
 #VSLIDE
 
