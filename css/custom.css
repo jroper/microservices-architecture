@@ -1,0 +1,30 @@
+.image-fragments {
+    position: relative;
+    left: 0;
+    top: 0;
+}
+
+.image-fragments > img:first-child {
+    position: relative;
+}
+
+.image-fragments > img {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.reveal section .image-fragments img {
+    border: 0;
+    box-shadow: none;
+    margin: 15px 25px;
+}
+
+/* increases contrast on background */
+#presentation h2, #presentation li, #presentation p {
+    text-shadow: #421540 0 0 0.2em;
+}
+
+#presentation a, #presentation a:visited {
+    color: white;
+}

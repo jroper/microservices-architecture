@@ -1,0 +1,323 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Monolith to Reactive - it's all about architecture</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal" id="presentation">
+			<div class="slides">
+
+<section>
+
+    <h2>Monolith to reactive</h2>
+
+    <p style="font-style: italic;">It's all about architecture</p>
+
+    <p style="margin-top: 100px; font-weight: bold;">James Roper</p>
+
+    <p><tt>@jroper</tt></p>
+
+    <img style="width: 30%; margin-top: 50px; border: none; background: none; box-shadow: none;" src="assets/lightbend-logo.svg"/>
+</section>
+
+<section>
+    <h2>Agenda</h2>
+
+    <ul>
+        <li class="fragment">Identify pitfalls of monolith conversions</li>
+        <li class="fragment">Architect reactive solutions</li>
+        <li class="fragment">See Lagom in action</li>
+        <li class="fragment">Live coding!</li>
+    </ul>
+</section>
+
+<section>
+<section>
+    <h2>Lagom Auction</h2>
+
+    <ul>
+        <li class="fragment">ebay clone</li>
+        <li class="fragment">Was a monolith, converted to microservices</li>
+        <li class="fragment">Will one day overtake ebay!</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img0.png"/>
+        <img src="assets/img1.png" class="fragment"/>
+        <img src="assets/img2.png" class="fragment"/>
+        <img src="assets/img3.png" class="fragment"/>
+        <img src="assets/img4.png" class="fragment"/>
+        <img src="assets/img5.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>What if something goes wrong?</h2>
+
+    <ul>
+        <li class="fragment">Microservices means more moving parts
+            <ul>
+                <li class="fragment">More chance for failure</li>
+                <li class="fragment">More chance for inconsistency</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h2>Synchronous communication</h2>
+
+    <p class="fragment">
+    <b>synchronous</b> <i>adj.</i> - existing or occurring at the same time.
+    </p>
+</section>
+
+<section>
+    <h2>Synchronous communication</h2>
+
+    <ul>
+        <li class="fragment">Typically request/response
+            <ul>
+                <li class="fragment">e.g. REST</li>
+            </ul>
+        </li>
+        <li class="fragment">Both systems must be responsive at the same time</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img5.png"/>
+        <img src="assets/img6.png" class="fragment"/>
+        <img src="assets/img7.png" class="fragment"/>
+        <img src="assets/img8.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Pattern 1: Circuit breakers</h2>
+
+    <ul>
+        <li class="fragment">A gate that opens in the event of failure
+            <ul>
+                <li class="fragment">Including timeouts</li>
+            </ul>
+        </li>
+        <li class="fragment">Protects already failing services</li>
+        <li class="fragment">Allows fail fast handling</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img9.png"/>
+        <img src="assets/img10.png" class="fragment"/>
+        <img src="assets/img11.png" class="fragment"/>
+        <img src="assets/img12.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Pattern 2: Failure recovery</h2>
+
+    <ul>
+        <li class="fragment">Work around failure by degrading</li>
+        <li class="fragment">Not every call is necessary to render every page</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img13.png"/>
+        <img src="assets/img14.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Failure can lead to inconsistency</h2>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img15.png"/>
+        <img src="assets/img16.png" class="fragment"/>
+        <img src="assets/img17.png" class="fragment"/>
+        <img src="assets/img18.png" class="fragment"/>
+        <img src="assets/img19.png" class="fragment"/>
+        <img src="assets/img20.png" class="fragment"/>
+        <img src="assets/img21.png" class="fragment"/>
+        <img src="assets/img22.png" class="fragment"/>
+        <img src="assets/img23.png" class="fragment"/>
+    </div>
+</section>
+
+<section>
+    <h2>Inconsistency from failure</h2>
+
+    <ul>
+        <li class="fragment">Synchronous "at same time" communication of updates is dangerous
+            <ul>
+                <li class="fragment">Transactions can't span service boundaries</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Pattern 3: Asynchronous messaging</h2>
+
+    <ul>
+        <li class="fragment">Does not require both systems to be responsive</li>
+        <li class="fragment">Perfect if you already persist events</li>
+        <li class="fragment">Use persistent events as a source of messages</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img17.png"/>
+        <img src="assets/img24.png" class="fragment"/>
+        <img src="assets/img25.png" class="fragment"/>
+        <img src="assets/img26.png" class="fragment"/>
+        <img src="assets/img27.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Unacceptable degradation</h2>
+
+    <ul>
+        <li class="fragment">Earlier we degraded the item page with empty bid history</li>
+        <li class="fragment">Price was also $0</li>
+        <li class="fragment">Users may tolerate no history, but not wrong price</li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img28.png"/>
+        <img src="assets/img29.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Pattern 4: Denormalize</h2>
+
+    <ul>
+        <li class="fragment">Push important information to other services
+            <ul>
+                <li class="fragment">Important for system funcitons</li>
+                <li class="fragment">Important for business functions</li>
+            </ul>
+        </li>
+        <li class="fragment">Store duplicated information in those services
+            <ul>
+                <li class="fragment">AKA denormalization</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <div class="image-fragments">
+        <img src="assets/img30.png"/>
+        <img src="assets/img31.png" class="fragment"/>
+        <img src="assets/img32.png" class="fragment"/>
+    </div>
+</section>
+</section>
+
+<section>
+<section>
+    <h2>Summary</h2>
+    
+    <ul>
+        <li class="fragment">Monolith to microservices requires rearchitecting data flows</li>
+        <li class="fragment">Failure and inconsistency must be managed</li>
+        <li class="fragment">Use:
+            <ul>
+                <li class="fragment">Circuit breakers</li>
+                <li class="fragment">Failure degradation</li>
+                <li class="fragment">Asynchronous messaging</li>
+                <li class="fragment">Denormalization</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h2>Next steps</h2>
+
+    <p><a href="http://lagomframework.com">http://lagomframework.com</a></p>
+    <p><a href="https://github.com/jroper/mircoservices-architecture">https://github.com/jroper/mircoservices-architecture</a></p>
+</section>
+</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+            var sections = document.getElementsByTagName('section');
+			for (var i = 0; i < sections.length; i++) {
+                var slide = sections[i];
+  				if (!(slide.getAttribute('data-background') ||
+        				slide.getAttribute('data-background-video') ||
+        				slide.getAttribute('data-background-iframe'))) {
+    				slide.setAttribute('data-background', 'assets/lagom-hero.png');
+  				}
+			}
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
