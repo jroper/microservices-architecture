@@ -21,15 +21,13 @@ Lightbend
 
 #HSLIDE
 
-## Lagom auction
+## Lagom Auction
 
-- Ebay clone                                    <!-- .element: class="fragment" -->
+- ebay clone                                    <!-- .element: class="fragment" -->
 - Was a monolith, converted to microservices    <!-- .element: class="fragment" -->
-- Will one day overtake Ebay                    <!-- .element: class="fragment" -->
+- Will one day overtake ebay!                   <!-- .element: class="fragment" -->
 
 #VSLIDE
-
-## Monolith architecture
 
 <div class="image-fragments">
     <div>
@@ -56,21 +54,23 @@ Lightbend
 
 ## What if something goes wrong?
 
-#VSLIDE
-
-## Synchronous communication
-
-#VSLIDE
-
-### synchronous *adjective* - existing or occurring at the same time.
+- Microservices means more moving parts     <!-- .element: class="fragment" -->
+    - More chance for failure               <!-- .element: class="fragment" -->
+    - More chance for inconsistency         <!-- .element: class="fragment" -->
 
 #VSLIDE
 
 ## Synchronous communication
 
-- Typically request/response                    <!-- .element: class="fragment" -->
-    - e.g. REST                                 <!-- .element: class="fragment" -->
-- Both systems must responsive at the same time <!-- .element: class="fragment" -->
+**synchronous** *adj.* - existing or occurring at the same time. <!-- .element: class="fragment" -->
+
+#VSLIDE
+
+## Synchronous communication
+
+- Typically request/response                        <!-- .element: class="fragment" -->
+    - e.g. REST                                     <!-- .element: class="fragment" -->
+- Both systems must be responsive at the same time  <!-- .element: class="fragment" -->
 
 #VSLIDE
 
@@ -182,7 +182,7 @@ Lightbend
 
 - Does not require both systems to be responsive    <!-- .element: class="fragment" -->
 - Perfect if you already persist events             <!-- .element: class="fragment" -->
-- Use persistent events a source of messages        <!-- .element: class="fragment" -->
+- Use persistent events as a source of messages     <!-- .element: class="fragment" -->
 
 #VSLIDE
 
@@ -206,7 +206,7 @@ Lightbend
 
 #HSLIDE
 
-## Unnacceptable degradation
+## Unacceptable degradation
 
 - Earlier we degraded the item page with empty bid history  <!-- .element: class="fragment" -->
 - Price was also $0                                         <!-- .element: class="fragment" -->
@@ -264,4 +264,4 @@ Lightbend
 ## Next steps
 
 http://lagomframework.com
-http://github.com/jroper/mircoservices-architecture
+https://github.com/jroper/mircoservices-architecture

@@ -1,1 +1,3 @@
+theme: black
+background: assets/lagom-hero.png
 theme-override: assets/theme.css
