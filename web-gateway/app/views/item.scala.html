@@ -50,47 +50,53 @@
         @item.getDescription
     </p>
 
-    <dl>
-        <dt>@message("seller")</dt>
-        <dd>@seller.getName</dd>
+    <div class="row">
+        <dl class="columns medium-4">
+            <dt>@message("seller")</dt>
+            <dd>@seller.getName</dd>
 
-        <dt>@message("currency")</dt>
-        <dd>@currency.getDisplayName</dd>
+            <dt>@message("currency")</dt>
+            <dd>@currency.getDisplayName</dd>
 
-        <dt>@message("increment")</dt>
-        <dd>@currency.format(item.getIncrement)</dd>
+            <dt>@message("increment")</dt>
+            <dd>@currency.format(item.getIncrement)</dd>
 
-    @if(currentUser == item.getCreator) {
-        <dt>@message("reserve")</dt>
-        <dd>@currency.format(item.getReservePrice)</dd>
-    }
+            @if(currentUser == item.getCreator) {
+                <dt>@message("reserve")</dt>
+                <dd>@currency.format(item.getReservePrice)</dd>
+            }
+        </dl>
+        <dl class="columns medium-4">
+            <dt>@message("duration")</dt>
+            <dd>@nav.formatDuration(item.getAuctionDuration)</dd>
 
-        <dt>@message("duration")</dt>
-        <dd>@nav.formatDuration(item.getAuctionDuration)</dd>
+            @if(item.getStatus == ItemStatus.AUCTION || item.getStatus == ItemStatus.COMPLETED) {
+                <dt>@message("auctionStart")</dt>
+                <dd>@nav.formatInstant(item.getAuctionStart.get)</dd>
 
-    @if(item.getStatus == ItemStatus.AUCTION || item.getStatus == ItemStatus.COMPLETED) {
-        <dt>@message("auctionStart")</dt>
-        <dd>@nav.formatInstant(item.getAuctionStart.get)</dd>
+                <dt>@message("auctionEnd")</dt>
+                <dd>@nav.formatInstant(item.getAuctionEnd.get)</dd>
+            }
 
-        <dt>@message("auctionEnd")</dt>
-        <dd>@nav.formatInstant(item.getAuctionEnd.get)</dd>
-    }
+        </dl>
+        <dl class="columns medium-4">
 
-    @if(item.getStatus == ItemStatus.AUCTION) {
-        <dt>@message("currentPrice")</dt>
-        <dd>@currency.format(item.getPrice)</dd>
-    }
+            @if(item.getStatus == ItemStatus.AUCTION) {
+                <dt>@message("currentPrice")</dt>
+                <dd>@currency.format(item.getPrice)</dd>
+            }
 
-    @if(item.getStatus == ItemStatus.COMPLETED) {
-        <dt>@message("finalPrice")</dt>
-        <dd>@currency.format(item.getPrice)</dd>
+            @if(item.getStatus == ItemStatus.COMPLETED) {
+                <dt>@message("finalPrice")</dt>
+                <dd>@currency.format(item.getPrice)</dd>
 
-        @if(winner.isPresent && (currentUser == item.getCreator || currentUser == winner.get.getId)) {
-            <dt>@message("auctionWinner")</dt>
-            <dd>@winner.get.getName</dd>
-        }
-    }
-    </dl>
+                @if(winner.isPresent && (currentUser == item.getCreator || currentUser == winner.get.getId)) {
+                    <dt>@message("auctionWinner")</dt>
+                    <dd>@winner.get.getName</dd>
+                }
+            }
+        </dl>
+    </div>
 
     @if(currentUser == item.getCreator && item.getStatus == ItemStatus.CREATED) {
         <form action="@routes.ItemController.startAuction(item.getId.toString)" method="POST">

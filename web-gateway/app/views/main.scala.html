@@ -33,11 +33,13 @@
                 </ul>
             </div>
         </nav>
-        <article class="row">
-            <div class="small-12">
-            @content
-            </div>
-        </article>
+        <div class="row">
+            <article class="row">
+                <div class="small-12 columns">
+                @content
+                </div>
+            </article>
+        </div>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/foundation/dist/foundation.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("main.js")"></script>
