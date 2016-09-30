@@ -1,0 +1,137 @@
+<templateSet group="LagomArchitecture">
+  <template name="cb1" value=".exceptionally(error -&gt; {&#10;    $END$&#10;});&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="cb2" value="log.warn(&quot;Bidding service failed to load bids, returning empty bids&quot;, error);&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="cb3" value="return TreePVector.empty();" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pi1" value="return registry.eventStream(tag, offset)&#10;        $END$" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pi2" value=".filter(eventOffset -&gt; &#10;        eventOffset.first() instanceof PItemEvent.AuctionStarted&#10;)" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pi3" value=".mapAsync(1, eventAndOffset -&gt;&#10;        $END$&#10;);" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pi4" value="convertEvent(eventAndOffset.first())" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pi5" value=".thenApply(event -&gt;&#10;        Pair.create(event, eventAndOffset.second()))" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si1" value="itemService.itemEvents().subscribe().atLeastOnce($END$);" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si2" value="Flow.&lt;ItemEvent&gt;create().mapAsync(1, itemEvent -&gt; {&#10;    $END$&#10;})" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si3" value="if (itemEvent instanceof ItemEvent.AuctionStarted) {&#10;    $END$&#10;} else {&#10;    return CompletableFuture.completedFuture(Done.getInstance());&#10;}" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si4" value="ItemEvent.AuctionStarted auctionStarted = (ItemEvent.AuctionStarted) itemEvent;&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si5" value="Auction auction = new Auction(auctionStarted.getItemId(), auctionStarted.getCreator(),&#10;        auctionStarted.getReservePrice(), auctionStarted.getIncrement(), auctionStarted.getStartDate(),&#10;        auctionStarted.getEndDate());&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si6" value="return entityRef(auctionStarted.getItemId())&#10;        " toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="si7" value=".ask(new AuctionCommand.StartAuction(auction));" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb1" value="return registry.eventStream(tag, offset)" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb2" value=".filter(eventOffset -&gt;&#10;        eventOffset.first() instanceof AuctionEvent.BidPlaced ||&#10;                eventOffset.first() instanceof AuctionEvent.BiddingFinished&#10;)" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb3" value=".mapAsync(1, eventOffset -&gt; {&#10;    $END$&#10;});&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb4" value="if (eventOffset.first() instanceof AuctionEvent.BidPlaced) {&#10;    $END$&#10;} else {&#10;    &#10;}" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb5" value="AuctionEvent.BidPlaced bid = (AuctionEvent.BidPlaced) eventOffset.first();&#10;" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb6" value="return CompletableFuture.completedFuture(Pair.create(&#10;        new BidEvent.BidPlaced(bid.getItemId(), convertBid(bid.getBid())),&#10;        eventOffset.second()&#10;));" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="pb7" value="UUID itemId = ((AuctionEvent.BiddingFinished) eventOffset.first()).getItemId();&#10;return getBiddingFinish(itemId, eventOffset.second());" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="sb1" value="biddingService.bidEvents().subscribe().atLeastOnce($END$);" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="sb2" value="Flow.&lt;BidEvent&gt;create().mapAsync(1, event -&gt; {&#10;    $END$&#10;})" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="sb3" value="if (event instanceof BidEvent.BidPlaced) {&#10;    $END$&#10;} else if (event instanceof BidEvent.BiddingFinished) {&#10;    &#10;} else {&#10;    // Ignore.&#10;    return CompletableFuture.completedFuture(Done.getInstance());&#10;}" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="sb4" value="BidEvent.BidPlaced bidPlaced = (BidEvent.BidPlaced) event;&#10;return entityRef(bidPlaced.getItemId())&#10;        .ask(new PItemCommand.UpdatePrice(bidPlaced.getBid().getPrice()));" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+  <template name="sb5" value="BidEvent.BiddingFinished biddingFinished = (BidEvent.BiddingFinished) event;&#10;PItemCommand.FinishAuction finishAuction = new PItemCommand.FinishAuction(&#10;        biddingFinished.getWinningBid().map(Bid::getBidder),&#10;        biddingFinished.getWinningBid().map(Bid::getPrice).orElse(0));&#10;return entityRef(biddingFinished.getItemId()).ask(finishAuction);" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
+</templateSet>
