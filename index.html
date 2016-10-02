@@ -316,7 +316,11 @@
 					{ src: 'plugin/markdown/markdown.js' },
 					{ src: 'plugin/notes/notes.js', async: true },
 					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
+				],
+
+                keyboard: {
+                    86: "togglePause"
+                }
 			});
 		</script>
 	</body>
