@@ -1,8 +1,10 @@
+[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/jroper/microservices-architecture?grs=github)
+
 # Microservices to Reactive - it's all about architecture
 
 This is the repo for the above titled presentation. The presentation was first given at Reactive Summit Austin in October 2016, and is an evolution from my previous presentation about Lagom, [Rethinking REST in a microservices world](https://github.com/jroper/rethinking-rest).
 
-The presentation is a reveal.js presentation, and can be viewed by going to http://jroper.github.io/microservices-architecture, or by cloning this repo and opening `index.html` in the master branch. There is also a PDF export of the presentation in this repo.
+The presentation is a GitPitch presentation, and can be viewed by going to [https://gitpitch.com/jroper/microservices-architecture](https://gitpitch.com/jroper/microservices-architecture). The GitPitch presentation can be exported to PDF or as a self-contained bundle that can be used for [offline presentation](https://github.com/gitpitch/gitpitch/wiki/Slideshow-Offline).
 
 The source code for the live demos can also be found in branches of this repo, the `initial` branch contains the application in it's initial (bad) state, and the `complete` branch contains the application in it's completed state after all the changes that I make in the presentation.
 
