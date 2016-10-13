@@ -96,7 +96,11 @@ public class ItemController extends AbstractController {
 
             // Get the bidding history from the bidding service in parallel
             CompletionStage<PSequence<Bid>> bidHistoryFuture = bidService.getBids(itemUuid)
-                    .handleRequestHeader(authenticate(user)).invoke();
+                    .handleRequestHeader(authenticate(user)).invoke().exceptionally(error -> {
+                        log.warn("Bidding service failed to load bids, returning empty bids", error);
+                        return TreePVector.empty();
+                    });
+
 
             // Combine the two futures together.
             return itemFuture.thenCombineAsync(bidHistoryFuture, (item, bidHistory) -> {

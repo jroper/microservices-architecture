@@ -48,6 +48,18 @@ public class BiddingServiceImpl implements BiddingService {
 
         registry.register(AuctionEntity.class);
 
+        itemService.itemEvents().subscribe().atLeastOnce(Flow.<ItemEvent>create().mapAsync(1, itemEvent -> {
+            if (itemEvent instanceof ItemEvent.AuctionStarted) {
+                ItemEvent.AuctionStarted auctionStarted = (ItemEvent.AuctionStarted) itemEvent;
+                Auction auction = new Auction(auctionStarted.getItemId(), auctionStarted.getCreator(),
+                        auctionStarted.getReservePrice(), auctionStarted.getIncrement(), auctionStarted.getStartDate(),
+                        auctionStarted.getEndDate());
+                return entityRef(auctionStarted.getItemId())
+                        .ask(new AuctionCommand.StartAuction(auction));
+            } else {
+                return CompletableFuture.completedFuture(Done.getInstance());
+            }
+        }));
     }
 
     @Override
@@ -92,7 +104,22 @@ public class BiddingServiceImpl implements BiddingService {
      * Create the stream for the given tag and offset.
      */
     private Source<Pair<BidEvent, Offset>, ?> streamForTag(AggregateEventTag<AuctionEvent> tag, Offset offset) {
-        return Source.maybe();
+        return registry.eventStream(tag, offset).filter(eventOffset ->
+                eventOffset.first() instanceof AuctionEvent.BidPlaced ||
+                        eventOffset.first() instanceof AuctionEvent.BiddingFinished
+        ).mapAsync(1, eventOffset -> {
+            if (eventOffset.first() instanceof AuctionEvent.BidPlaced) {
+                AuctionEvent.BidPlaced bid = (AuctionEvent.BidPlaced) eventOffset.first();
+                return CompletableFuture.completedFuture(Pair.create(
+                        new BidEvent.BidPlaced(bid.getItemId(), convertBid(bid.getBid())),
+                        eventOffset.second()
+                ));
+            } else {
+                UUID itemId = ((AuctionEvent.BiddingFinished) eventOffset.first()).getItemId();
+                return getBiddingFinish(itemId, eventOffset.second());
+            }
+        });
+
     }
 
     /**

@@ -45,6 +45,23 @@ public class ItemServiceImpl implements ItemService {
 
         registry.register(PItemEntity.class);
 
+        biddingService.bidEvents().subscribe().atLeastOnce(Flow.<BidEvent>create().mapAsync(1, event -> {
+            if (event instanceof BidEvent.BidPlaced) {
+                BidEvent.BidPlaced bidPlaced = (BidEvent.BidPlaced) event;
+                return entityRef(bidPlaced.getItemId())
+                        .ask(new PItemCommand.UpdatePrice(bidPlaced.getBid().getPrice()));
+            } else if (event instanceof BidEvent.BiddingFinished) {
+                BidEvent.BiddingFinished biddingFinished = (BidEvent.BiddingFinished) event;
+                PItemCommand.FinishAuction finishAuction = new PItemCommand.FinishAuction(
+                        biddingFinished.getWinningBid().map(Bid::getBidder),
+                        biddingFinished.getWinningBid().map(Bid::getPrice).orElse(0));
+                return entityRef(biddingFinished.getItemId()).ask(finishAuction);
+
+            } else {
+                // Ignore.
+                return CompletableFuture.completedFuture(Done.getInstance());
+            }
+        }));
     }
 
     @Override
@@ -71,15 +88,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ServiceCall<NotUsed, Done> startAuction(UUID id) {
         return authenticated(userId -> req ->
-            entityRef(id).ask(new PItemCommand.StartAuction(userId)).thenCompose(done ->
-                    entityRef(id).ask(PItemCommand.GetItem.INSTANCE)
-            ).thenCompose(maybeItem -> {
-                PItem item = maybeItem.get();
-                return biddingService.startAuction(id).invoke(
-                        new AuctionToStart(item.getId(), item.getCreator(), item.getReservePrice(),
-                                item.getIncrement(), item.getAuctionStart().get(), item.getAuctionEnd().get())
-                );
-            })
+            entityRef(id).ask(new PItemCommand.StartAuction(userId))
         );
     }
 
@@ -132,7 +141,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Topic<ItemEvent> itemEvents() {
         return TopicProducer.taggedStreamWithOffset(PItemEvent.TAGS, (tag, offset) -> {
-            return Source.maybe();
+            return registry.eventStream(tag, offset)
+                    .filter(eventOffset ->
+                            eventOffset.first() instanceof PItemEvent.AuctionStarted
+                    ).mapAsync(1, eventAndOffset ->
+                            convertEvent(eventAndOffset.first()).thenApply(event ->
+                                    Pair.create(event, eventAndOffset.second()))
+                    );
         });
     }
 
