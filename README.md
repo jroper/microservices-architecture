@@ -1,4 +1,4 @@
-# Microservices to Reactive - it's all about architecture
+# Monolith to Reactive - it's all about architecture
 
 This is the repo for the above titled presentation. The presentation was first given at Reactive Summit Austin in October 2016, and is an evolution from my previous presentation about Lagom, [Rethinking REST in a microservices world](https://github.com/jroper/rethinking-rest).
 
