@@ -1,4 +1,4 @@
-[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/jroper/microservices-architecture?grs=github)
+[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/gitpitch/microservices-architecture)
 
 # Microservices to Reactive - it's all about architecture
 
